@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+               http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans.xsd
+               http://camel.apache.org/schema/spring
+               http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <routeContext id="camelRoutes" xmlns="http://camel.apache.org/schema/spring">
+
+        <route>
+
+            <from ref="start"/>
+            <log logName="HTTP REQUEST LOG" loggingLevel="INFO"
+                 message="HTTP REQUEST: ${in.header.CamelHttpMethod} from ${in.header.Host}"/>
+            <choice>
+                <when>
+                    <simple>${header.CamelHttpMethod} == 'CREATE'</simple>
+                    <process ref="createProcessor"/>
+                </when>
+                <when>
+                    <simple>${header.CamelHttpMethod} == 'GET'</simple>
+                    <process ref="getProcessor"/>
+                </when>
+                <when>
+                    <simple>${header.CamelHttpMethod} == 'UPDATE'</simple>
+                    <process ref="updateProcessor"/>
+                </when>
+                <when>
+                    <simple>${header.CamelHttpMethod} == 'DELETE'</simple>
+                    <process ref="deleteProcessor"/>
+                </when>
+                <otherwise>
+                    <process ref="badRequestProcessor"/>
+                    <stop/>
+                </otherwise>
+            </choice>
+            <!--<to uri="direct:test"/>-->
+        </route>
+
+        <route>
+            <from uri="direct:test"/>
+            <process ref="testProcessor"/>
+        </route>
+
+    </routeContext>
+
+</beans>
