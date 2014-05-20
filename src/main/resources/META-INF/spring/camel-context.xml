@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:camel="http://camel.apache.org/schema/spring"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-               http://www.springframework.org/schema/beans
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ctx="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                http://www.springframework.org/schema/beans/spring-beans.xsd
                http://camel.apache.org/schema/spring
-               http://camel.apache.org/schema/spring/camel-spring.xsd">
+               http://camel.apache.org/schema/spring/camel-spring.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <routeContext id="camelRoutes" xmlns="http://camel.apache.org/schema/spring">
 
@@ -17,34 +16,37 @@
                  message="HTTP REQUEST: ${in.header.CamelHttpMethod} from ${in.header.Host}"/>
             <choice>
                 <when>
-                    <simple>${header.CamelHttpMethod} == 'CREATE'</simple>
-                    <process ref="createProcessor"/>
+                    <simple>${header.CamelHttpMethod} == 'PUT'</simple>
+                    <bean ref="dispatcher" method="create"/>
                 </when>
                 <when>
                     <simple>${header.CamelHttpMethod} == 'GET'</simple>
-                    <process ref="getProcessor"/>
+                    <bean ref="dispatcher" method="get"/>
                 </when>
                 <when>
-                    <simple>${header.CamelHttpMethod} == 'UPDATE'</simple>
-                    <process ref="updateProcessor"/>
+                    <simple>${header.CamelHttpMethod} == 'PUT'</simple>
+                    <bean ref="dispatcher" method="update"/>
                 </when>
                 <when>
                     <simple>${header.CamelHttpMethod} == 'DELETE'</simple>
-                    <process ref="deleteProcessor"/>
+                    <bean ref="dispatcher" method="delete"/>
                 </when>
                 <otherwise>
-                    <process ref="badRequestProcessor"/>
+                    <bean ref="dispatcher" method="badRequest"/>
                     <stop/>
                 </otherwise>
             </choice>
             <!--<to uri="direct:test"/>-->
         </route>
-
+<!--
         <route>
             <from uri="direct:test"/>
             <process ref="testProcessor"/>
-        </route>
+        </route>-->
 
     </routeContext>
+
+    <ctx:annotation-config/>
+    <ctx:component-scan base-package="com.andrewkravets.db"/>
 
 </beans>

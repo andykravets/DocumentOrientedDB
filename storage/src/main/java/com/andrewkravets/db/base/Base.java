@@ -5,7 +5,6 @@ import com.andrewkravets.db.enums.ReservedWords;
 import com.andrewkravets.db.model.ObjectId;
 import com.andrewkravets.db.utils.PersistHelper;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ public class Base {
 
     private static Base instance = null;
 
-    private Map<ObjectId, JsonObject> documents = new HashMap<ObjectId, JsonObject>();
+    private Map<Long, JsonObject> documents = new HashMap<Long, JsonObject>();
 
     public static Base getInstance() {
         if (instance == null) {
@@ -37,15 +36,24 @@ public class Base {
     }
 
     public JsonObject add(JsonObject object) {
-        Gson g = new Gson();
-        object.add(ReservedWords.ID.getRepresentation(), g.toJsonTree(new ObjectId()));
-        documents.put(getObjectId(object), object);
+        Long key = System.nanoTime();
+        if(key==null){
+            key=System.nanoTime();
+            Gson g = new Gson();
+            object.add(ReservedWords.ID.getRepresentation(), g.toJsonTree(key));
+        }
+
+        documents.put(key, object);
         return object;
     }
 
     public JsonObject remove(JsonObject object) {
         documents.remove(getObjectId(object));
         return object;
+    }
+
+    public JsonObject create(JsonObject object){
+        return add(object);
     }
 
     public JsonObject edit(JsonObject object) {
@@ -63,8 +71,8 @@ public class Base {
         documents = PersistHelper.load();
     }
 
-    private ObjectId getObjectId(JsonObject object) {
-        return object.get(ReservedWords.ID.getRepresentation()).;
+    private Long getObjectId(JsonObject object) {
+        return object.get(ReservedWords.ID.getRepresentation()).getAsLong();
     }
 
     public JsonObject get(ObjectId id) {
