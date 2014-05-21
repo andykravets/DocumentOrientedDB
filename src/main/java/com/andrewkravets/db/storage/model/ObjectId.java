@@ -1,4 +1,4 @@
-package com.andrewkravets.db.model;
+package com.andrewkravets.db.storage.model;
 
 import java.io.Serializable;
 

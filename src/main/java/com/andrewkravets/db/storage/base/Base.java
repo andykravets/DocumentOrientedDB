@@ -1,9 +1,8 @@
-package com.andrewkravets.db.base;
+package com.andrewkravets.db.storage.base;
 
 
 import com.andrewkravets.db.enums.ReservedWords;
-import com.andrewkravets.db.model.ObjectId;
-import com.andrewkravets.db.utils.PersistHelper;
+import com.andrewkravets.db.storage.utils.PersistHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
@@ -36,9 +35,9 @@ public class Base {
     }
 
     public JsonObject add(JsonObject object) {
-        Long key = System.nanoTime();
-        if(key==null){
-            key=System.nanoTime();
+        Long key = object.get(ReservedWords.ID.getRepresentation()).getAsLong();
+        if (key == null || key == 0) {
+            key = System.nanoTime();
             Gson g = new Gson();
             object.add(ReservedWords.ID.getRepresentation(), g.toJsonTree(key));
         }
@@ -52,7 +51,7 @@ public class Base {
         return object;
     }
 
-    public JsonObject create(JsonObject object){
+    public JsonObject create(JsonObject object) {
         return add(object);
     }
 
@@ -75,7 +74,7 @@ public class Base {
         return object.get(ReservedWords.ID.getRepresentation()).getAsLong();
     }
 
-    public JsonObject get(ObjectId id) {
+    public JsonObject get(Long id) {
         return documents.get(id);
     }
 

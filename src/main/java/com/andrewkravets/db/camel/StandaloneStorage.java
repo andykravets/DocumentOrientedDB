@@ -1,4 +1,4 @@
-package com.andrewkravets.db;
+package com.andrewkravets.db.camel;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
@@ -15,17 +15,6 @@ public class StandaloneStorage {
         camelMain.setApplicationContextUri("META-INF/spring/config.xml");
         camelMain.enableHangupSupport();
         camelMain.start();
-
-        CamelContext context = camelMain.getApplicationContext().getBean(CamelContext.class);
-
-        context.addRoutes(new RouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                from("jetty:http://localhost:" + port + "/service")
-                        .to("direct:start");
-            }
-        });
-
     }
 
     public void stop() throws Exception {

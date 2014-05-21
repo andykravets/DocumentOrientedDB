@@ -1,8 +1,8 @@
-package com.andrewkravets.db.utils;
+package com.andrewkravets.db.storage.utils;
 
 import com.google.gson.JsonObject;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class PersistHelper {
 
-    private static final String DATA_FILE = "data.db";
+    private static final String DATA_FILE = "data.com.andrewkravets.db";
     private static final Logger LOG = LoggerFactory.getLogger(PersistHelper.class);
 
     public static Map<Long, JsonObject> load() {

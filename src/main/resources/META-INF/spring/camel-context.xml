@@ -1,48 +1,38 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:camel="http://camel.apache.org/schema/spring"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ctx="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-               http://www.springframework.org/schema/beans/spring-beans.xsd
-               http://camel.apache.org/schema/spring
-               http://camel.apache.org/schema/spring/camel-spring.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:ctx="http://www.springframework.org/schema/context"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation=" http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/cxf
+       http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://camel.apache.org/schema/spring
+       http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <cxf:rsServer address="http://localhost:8000" serviceClass="com.andrewkravets.db.camel.RequestDispatcher"
+                  id="rsServer"/>
+
+    <bean id="serv" class="com.andrewkravets.db.camel.RequestDispatcher" />
 
     <routeContext id="camelRoutes" xmlns="http://camel.apache.org/schema/spring">
 
-        <route>
 
-            <from ref="start"/>
+        <route>
+            <from uri="cxfrs://bean://rsServer"/>
             <log logName="HTTP REQUEST LOG" loggingLevel="INFO"
                  message="HTTP REQUEST: ${in.header.CamelHttpMethod} from ${in.header.Host}"/>
             <choice>
                 <when>
-                    <simple>${header.CamelHttpMethod} == 'PUT'</simple>
-                    <bean ref="dispatcher" method="create"/>
-                </when>
-                <when>
                     <simple>${header.CamelHttpMethod} == 'GET'</simple>
-                    <bean ref="dispatcher" method="get"/>
+                    <bean ref="serv" method="get"/>
                 </when>
-                <when>
-                    <simple>${header.CamelHttpMethod} == 'PUT'</simple>
-                    <bean ref="dispatcher" method="update"/>
-                </when>
-                <when>
-                    <simple>${header.CamelHttpMethod} == 'DELETE'</simple>
-                    <bean ref="dispatcher" method="delete"/>
-                </when>
-                <otherwise>
-                    <bean ref="dispatcher" method="badRequest"/>
-                    <stop/>
-                </otherwise>
             </choice>
             <!--<to uri="direct:test"/>-->
         </route>
-<!--
-        <route>
-            <from uri="direct:test"/>
-            <process ref="testProcessor"/>
-        </route>-->
 
     </routeContext>
 

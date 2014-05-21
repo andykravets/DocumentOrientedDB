@@ -1,4 +1,4 @@
-package com.andrewkravets.db.analizers;
+package com.andrewkravets.db.common.analizers;
 
 import com.andrewkravets.db.enums.ReservedWords;
 
